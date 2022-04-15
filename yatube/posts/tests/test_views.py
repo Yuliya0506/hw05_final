@@ -1,3 +1,4 @@
+import shutil
 import tempfile
 
 from django.conf import settings
@@ -65,6 +66,11 @@ class ViewsTests(TestCase):
                 kwargs={'username': cls.post.author}
             ),
         ]
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def setUp(self):
         # Создаем неавторизованный клиент
@@ -292,6 +298,25 @@ class ViewsTests(TestCase):
             author=self.author_1
         )
         self.assertTrue(follow_obj)
+
+    def test_authorized_client_can_unfollow(self):
+        """Авторизованный пользователь может отписаться
+        от других пользователей.
+        """
+        follow_obj = Follow.objects.create(
+            user=self.author,
+            author=self.author_1
+        )
+        self.assertTrue(follow_obj)
+        self.authorized_client.get(reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': self.author_1.username}
+        ))
+        follow_obj = Follow.objects.filter(
+            user=self.author,
+            author=self.author_1
+        )
+        self.assertFalse(follow_obj)
 
     def test_new_post_add_follower_not_add_unfollower(self):
         """Новая запись пользователя появляется в ленте тех,

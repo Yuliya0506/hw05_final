@@ -10,7 +10,7 @@ POSTS_ON_PAGE = 10
 
 
 def index(request):
-    posts = Post.objects.all()
+    posts = Post.objects.select_related('author').all()
     text = 'Последние обновления на сайте'
     paginator = Paginator(posts, POSTS_ON_PAGE)
     page_number = request.GET.get('page')
@@ -46,10 +46,13 @@ def profile(request, username):
     paginator = Paginator(posts, POSTS_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    following = Follow.objects.filter(
-        user=request.user.id,
-        author=author.id
-    ).exists()
+    if request.user.is_authenticated:
+        following = Follow.objects.filter(
+            user=request.user.id,
+            author=author.id
+        ).exists()
+    else:
+        following = False
     context = {
         'count_posts': count_posts,
         'page_obj': page_obj,
@@ -137,7 +140,9 @@ def profile_follow(request, username):
         author=author_obj
     )
     if not follow_obj.exists() and author_obj != user_obj:
-        Follow.objects.create(user=user_obj, author=author_obj)
+        obj, created = Follow.objects.get_or_create(
+            user=user_obj, author=author_obj
+        )
     return redirect('posts:profile', username=author_obj.username)
 
 
@@ -145,10 +150,8 @@ def profile_follow(request, username):
 def profile_unfollow(request, username):
     author_obj = get_object_or_404(User, username=username)
     user_obj = request.user
-    follow_obj = Follow.objects.filter(
+    Follow.objects.filter(
         user=user_obj,
         author=author_obj
-    )
-    if follow_obj.exists():
-        follow_obj.delete()
+    ).delete()
     return redirect('posts:profile', username=author_obj.username)
