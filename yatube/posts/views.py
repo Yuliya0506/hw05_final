@@ -135,10 +135,6 @@ def follow_index(request):
 def profile_follow(request, username):
     author_obj = get_object_or_404(User, username=username)
     user_obj = request.user
-    Follow.objects.filter(
-        user=user_obj,
-        author=author_obj
-    )
     if author_obj != user_obj:
         Follow.objects.get_or_create(
             user=user_obj, author=author_obj
