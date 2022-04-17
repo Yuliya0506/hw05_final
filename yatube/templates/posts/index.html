@@ -3,7 +3,7 @@
 {% load thumbnail %}
 {% block title %}{{ title}}{% endblock %}
 {% block content %}
-  {% include 'posts/includes/switcher.html' %}
+  {% include 'posts/includes/switcher.html' with index=True %} 
     <h1>{{ text }}</h1>
     {% cache 20 index_page page_obj.number %}
     {% for post in page_obj %}

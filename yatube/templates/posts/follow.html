@@ -3,7 +3,7 @@
   Избранные записи
 {% endblock %}
 {% block content %}
-  {% include 'posts/includes/switcher.html' %}
+  {% include 'posts/includes/switcher.html' with follow=True %} 
   <h1>Записи избранных авторов</h1>
   {% for post in page_obj %}
     {% include 'includes/article.html' %}
