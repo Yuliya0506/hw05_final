@@ -7,10 +7,8 @@ SECRET_KEY = 'an7qxhvd0pw8v_ri+b5!=k61z^+mk0t4lycfq=p2#@ry5dris7'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '[::1]',
-    'testserver',
+    'www.f0670258.cp.sprinthost.ru',
+    'f0670258.cp.sprinthost.ru',
 ]
 
 
